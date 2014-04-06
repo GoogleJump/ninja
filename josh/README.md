@@ -29,7 +29,7 @@ To run this code, follow these steps:
 
 5. Sign in with a Google+ account
 
-6. Navigate to http://localhost:4567/moment to insert a "moment" on to your profile
+6. Click to insert a "moment" on to your profile
 
 7. To view the moment:
 	- Go to the "About" tab of your Google+ profile.
