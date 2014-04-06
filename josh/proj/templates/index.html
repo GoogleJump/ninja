@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Hello!</h1>
+
+<div id="gConnect">
+	<!-- 
+		The data-scope attribute indicates the access to a users data the app requires
+		The data-requestvisibleactions attribute defines the type of moments the app is requesting to write
+		The callback function handles the result of the authorization. 
+	-->
+    <div id="connect">
+        <button class="g-signin"
+            data-scope="https://www.googleapis.com/auth/plus.login"
+            data-requestvisibleactions="http://schemas.google.com/AddActivity"
+            data-clientId="{{ CLIENT_ID }}"
+            data-accesstype="offline"
+            data-callback="onSignInCallback"
+            data-theme="dark"
+            data-cookiepolicy="single_host_origin">
+        </button>
+    </div>
+    <button id="disconnect" >Disconnect your Google account from this app</button>
+
+    <h1>Welcome</h1>
+    <div id="connected"></div>
+
+    <h2>Inserting a moment</h2>
+    <button id="upload">Upload a moment to your Google+ profile</button>
+    <div id="moment"></div>
+</div>
+
+<script type = "text/javascript">
+
+    var authResult = undefined;
+
+    function onSignInCallback(authResult) {
+      if (authResult['access_token']) {     // the user is signed in
+        console.log(authResult);
+
+        // Hide the sign-in button
+        $('#connect').hide('slow');
+
+        this.authResult = authResult;
+        connectServer();
+      } else {
+        console.log('Sign-in state: ' + authResult['error']);
+      }
+    }
+
+    function connectServer() {
+        console.log(authResult.code);
+        // Ajax is a group of web development techniques used on the client-side
+        // It creates asynchronous Web Applications 
+        // They can send and retrieve data in background without interfering with the existing page
+        $.ajax({
+            type: 'POST',
+            // the url to which the request is sent
+            url: window.location.href + '/connect',
+            // what is this?
+            contentType: 'application/octet-stream; charset=utf-8',
+            // a function to call if the request succeeds
+            success: function(result) {                         
+              console.log(result);
+
+            },
+            // prevents data from being transformed into a query string
+            processData: false,
+            // data to be sent to the server
+            data: this.authResult.code
+        });
+
+        $('#connected').empty();
+        $('#connected').append($("<p>You're connected!</p>"));
+    }
+
+    function disconnectServer() {
+        // redisplay the sign-in button
+        $('#connect').show('slow');
+
+        $.ajax({
+            type: 'POST',
+            url: window.location.href + '/disconnect',
+            async: false,
+            success: function(result) {
+                console.log('revoke response: ' + result);
+            },
+            error: function(e) {
+                console.log(e);
+            }
+        });
+    }
+
+    function insertMoment() {
+        $.ajax({
+            type: 'POST',
+            url: window.location.href + '/moment',
+            success: function(result) {
+                console.log('insert moment: ' + result);
+            },
+            error: function(e) {
+                console.log(e);
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        $('#disconnect').click(disconnectServer);
+        $('#upload').click(insertMoment);
+    });
+</script>
+
+{% endblock %}
