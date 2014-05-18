@@ -56,22 +56,20 @@
         $.ajax({
             type: 'POST',
             // the url to which the request is sent
-            url: window.location.href + '/connect',
+            url: window.location.href + 'connect',
             // what is this?
             contentType: 'application/octet-stream; charset=utf-8',
             // a function to call if the request succeeds
             success: function(result) {                         
               console.log(result);
-
+              $('#connected').empty();
+              $('#connected').append($("<p>You're connected!</p>"));
             },
             // prevents data from being transformed into a query string
             processData: false,
             // data to be sent to the server
             data: this.authResult.code
         });
-
-        $('#connected').empty();
-        $('#connected').append($("<p>You're connected!</p>"));
     }
 
     function disconnectServer() {
@@ -80,7 +78,7 @@
 
         $.ajax({
             type: 'POST',
-            url: window.location.href + '/disconnect',
+            url: window.location.href + 'disconnect',
             async: false,
             success: function(result) {
                 console.log('revoke response: ' + result);
@@ -94,9 +92,10 @@
     function insertMoment() {
         $.ajax({
             type: 'POST',
-            url: window.location.href + '/moment',
+            url: window.location.href + 'moment',
             success: function(result) {
                 console.log('insert moment: ' + result);
+                $('#moment').append($("<p>A moment has been inserted on the About tab of your profile!</p>"));
             },
             error: function(e) {
                 console.log(e);

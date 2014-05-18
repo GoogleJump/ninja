@@ -1,0 +1,31 @@
+# Note: this also relies on the Google App Engine SDK for Python
+
+# Flask is a web framework: it supports the development of dynamic websites and web applications
+Flask==0.9
+
+Flask-KVSession==0.3.2
+
+# Flask relies on Jinja2. Jinja is a template engine for Python used to generate markup & source code.
+Jinja2==2.6
+
+# Flask relies on Werkzeug. Werkzeug is a Web Server Gateway Interface utility library for Python. 
+# WSGI was built to standardize communication between web servers and python applications.
+Werkzeug==0.8.3
+
+# The Google APIs client library for Python
+google-api-python-client==1.1
+
+# A comprehensive HTTP client library
+httplib2==0.8
+
+# Allows passage of trusted data to untrusted environments
+itsdangerous==0.17
+
+# Enables command-line processing, mimicking the handling of a C++ app
+python-gflags==2.0
+
+# An API for basic key-value stores
+simplekv==0.5
+
+# A reference implementation of the WSGI specification
+wsgiref==0.1.2

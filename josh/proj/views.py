@@ -21,6 +21,10 @@ from apiclient.discovery import build
 # a comprehensive HTTP client library
 import httplib2
 
+# An API to serve large data objects, blobs.
+# from google.appengine.ext import blobstore
+# from google.appengine.ext.webapp import blobstore_handlers
+
 import json
 import random
 import string
@@ -37,6 +41,16 @@ SERVICE = build('plus', 'v1')
 # what is this?
 app.secret_key = ''.join(random.choice(string.ascii_uppercase + string.digits)
                          for x in xrange(32))
+
+# create an upload URL for the browser to upload a blob to
+# upload_url = blobstore.create_upload_url('/upload')
+
+# create an upload form
+# self.response.out.write('<html><body>')
+# self.response.out.write('<form action="%s" method="POST" enctype="multipart/form-data">' % upload_url)
+# self.response.out.write("""Upload File: <input type="file" name="file"><br> <input type="submit"
+#    name="submit" value="Submit"> </form></body></html>""")
+
 
 # map the urls '/' and '/index' to this function
 @app.route('/')
@@ -63,7 +77,8 @@ def connect():
 		# create a flow object from client_secrets.json
 		oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
 
-		# what is this?
+		# once the oauth has gone through, go to the postmessage endpoint
+		# make an app.route that prints out "woohoo" and switch postmessage to that route
 		oauth_flow.redirect_uri = 'postmessage';
 
 		# exchange authorization code for a credentials object
@@ -71,20 +86,19 @@ def connect():
 		credentials = oauth_flow.step2_exchange(code)
 
 	except FlowExchangeError:
-	    response = make_response(json.dumps('Failed to upgrade the authorization code.'), 401)
-	    response.headers['Content-Type'] = 'application/json'
-	    return response
+		response = make_response(json.dumps('Failed to upgrade the authorization code.'), 401)
+		response.headers['Content-Type'] = 'application/json'
+		return response
 
 	# if successful, retrieve the identity of the resource owner
-	# what is sub?
+	# retrieve the gplus_id
 	gplus_id = credentials.id_token['sub']
 	stored_credentials = session.get('credentials')
 	stored_gplus_id = session.get('gplus_id')
 
 	# if the user is already connected
 	if stored_credentials is not None and gplus_id == stored_gplus_id:
-		response = make_response(json.dumps('Current user is already connected.'),
-		                         200)
+		response = make_response(json.dumps('Current user is already connected.'), 200)
 		response.headers['Content-Type'] = 'application/json'
 		return response
 
@@ -93,9 +107,8 @@ def connect():
 	session['gplus_id'] = gplus_id
 
 	# json.dumps takes a Python data structure and returns it as a JSON string
-	response = make_response(json.dumps('Successfully connected user.', 200))
+	response = make_response(json.dumps('Successfully connected user.'), 200)
 	response.headers['Content-Type'] = 'application/json'
-
 	return response
 
 @app.route('/disconnect', methods=['POST'])
@@ -138,14 +151,14 @@ def moment():
 
 		# create a moment
 		moment = {"type":"http://schemas.google.com/AddActivity",
-		        "target": {
-		          "id": "target-id-1",
-		          "type":"http://schemas.google.com/AddActivity",
-		          "name": "The Google+ Platform",
-		          "description": "A page that describes just how awesome Google+ is!",
-		          "image": "https://developers.google.com/+/plugins/snippet/examples/thing.png"
-		        }
-		     }
+					"target": {
+						"id": "target-id-1",
+						"type":"http://schemas.google.com/AddActivity",
+						"name": "The Google+ Platform",
+						"description": "A page that describes just how awesome Google+ is!",
+						"image": "https://developers.google.com/+/plugins/snippet/examples/thing.png"
+					}
+				}
 
 		google_request = SERVICE.moments().insert(userId='me', collection='vault', body=moment)
 		result = google_request.execute(http=http)
