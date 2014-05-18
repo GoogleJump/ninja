@@ -1,8 +1,8 @@
-This code allows a user to upload a photo and insert a moment on to their Google + profile that links to that photo.
+This code allows a user to insert a moment on to their Google + profile.
 
 1. Install the App Engine Python SDK: https://developers.google.com/appengine/downloads
 
-2. Install dependencies to the lib directory:
+2. Within the project directory, install dependencies to the lib directory:
 	
 	```
 	$ pip install -r requirements.txt -t lib
