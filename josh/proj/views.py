@@ -103,7 +103,7 @@ def connect():
 		return response
 
 	# otherwise, store the information
-	session['credentials'] = credentials
+	session['credentials'] = credentials.access_token
 	session['gplus_id'] = gplus_id
 
 	# json.dumps takes a Python data structure and returns it as a JSON string
@@ -114,7 +114,7 @@ def connect():
 @app.route('/disconnect', methods=['POST'])
 def disonnect():
 	# Only disconnect a connected user.
-	credentials = session.get('credentials')
+	credentials = AccessTokenCredentials(session.get('credentials'))
 	if credentials is None:
 		response = make_response(json.dumps('Current user not connected.'), 401)
 		response.headers['Content-Type'] = 'application/json'
