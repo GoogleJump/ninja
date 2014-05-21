@@ -13,6 +13,7 @@ from flask import request
 from oauth2client.client import flow_from_clientsecrets
 # an error trying to exchange an authorization grant for an access token
 from oauth2client.client import FlowExchangeError
+from oauth2client.client import AccessTokenCredentials
 # an error trying to refresh an expired access token
 from oauth2client.client import AccessTokenRefreshError
 
@@ -114,7 +115,9 @@ def connect():
 @app.route('/disconnect', methods=['POST'])
 def disonnect():
 	# Only disconnect a connected user.
-	credentials = AccessTokenCredentials(session.get('credentials'))
+        user_agent = request.headers.get('User-Agent')
+	credentials = AccessTokenCredentials(
+            session.get('credentials'), user_agent)
 	if credentials is None:
 		response = make_response(json.dumps('Current user not connected.'), 401)
 		response.headers['Content-Type'] = 'application/json'
@@ -139,7 +142,9 @@ def disonnect():
 
 @app.route('/moment', methods=['POST'])
 def moment():
-	credentials = session.get('credentials')
+        user_agent = request.headers.get('User-Agent')
+	credentials = AccessTokenCredentials(
+            session.get('credentials'), user_agent)
 	if credentials is None:
 		response = make_response(json.dumps('Current user not connected.'), 401)
 		response.headers['Content-Type'] = 'application/json'
