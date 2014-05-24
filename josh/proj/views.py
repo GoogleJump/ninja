@@ -135,7 +135,7 @@ def disonnect():
 		return response
 
 @app.route('/moment', methods=['POST'])
-def moment():
+def moment(blob_key):
 	user_agent = request.headers.get('User-Agent')
 	credentials = AccessTokenCredentials(session.get('credentials'), user_agent)
 	if credentials is None:
@@ -143,10 +143,14 @@ def moment():
 		response.headers['Content-Type'] = 'application/json'
 		return response
 
+
 	try:
 		http = httplib2.Http()
 		# authorize an instance of Http with a set of credentials
 		http = credentials.authorize(http)
+
+		# create image_url
+		image_url = request.url_root + 'img/' + blob_key
 
 		# create a moment
 		moment = {"type":"http://schemas.google.com/AddActivity",
@@ -155,7 +159,8 @@ def moment():
 						"type":"http://schemas.google.com/AddActivity",
 						"name": "The Google+ Platform",
 						"description": "A page that describes just how awesome Google+ is!",
-						"image": "https://developers.google.com/+/plugins/snippet/examples/thing.png"
+						"image": image_url
+						#"image": "https://developers.google.com/+/plugins/snippet/examples/thing.png"
 					}
 				}
 
@@ -175,7 +180,11 @@ def upload():
 	header = f.headers['Content-Type']
 	parsed_header = parse_options_header(header)
 	blob_key = parsed_header[1]['blob-key']
-	blob_info = blobstore.get(blob_key)
+	return moment(blob_key)
+
+@app.route('/img/<bkey>')
+def img(bkey):
+	blob_info = blobstore.get(bkey)
 	response = make_response(blob_info.open().read())
 	response.headers['Content-Type'] = blob_info.content_type
 	return response
