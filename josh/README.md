@@ -28,5 +28,5 @@ This code allows a user to insert a moment on to their Google + profile.
 8. To push code to Google App Engine
 
 	```
-	appcfg.py --version=${dev_name} update .
+	appcfg.py --version=${dev_name} --oauth2 update .
 	```
