@@ -10,9 +10,9 @@ This code allows a user to insert a moment on to their Google + profile.
 
 3. Run this project locally from the command line:
 
-   ```
-   dev_appserver.py .
-   ```
+	```
+	dev_appserver.py .
+	```
 
 4. Navigate to http://localhost:8080/
 
@@ -24,3 +24,9 @@ This code allows a user to insert a moment on to their Google + profile.
 	- Go to the "About" tab of your Google+ profile.
 	- Scroll down to "Apps with Google+ Sign-in"
 	- Click "Bouncehouse"
+
+8. To push code to Google App Engine
+
+	```
+	appcfg.py --version=${dev_name} update .
+	```
