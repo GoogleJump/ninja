@@ -23,12 +23,14 @@ from apiclient.discovery import build
 import httplib2
 
 # An API to serve large data objects, blobs.
-# from google.appengine.ext import blobstore
-# from google.appengine.ext.webapp import blobstore_handlers
+from google.appengine.ext import blobstore
+from google.appengine.ext.webapp import blobstore_handlers
 
 import json
 import random
 import string
+
+from werkzeug import parse_options_header
 
 # set the application name to be filled in on a template
 APPLICATION_NAME = 'Bouncehouse'
@@ -39,19 +41,12 @@ Client_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_i
 # create a service object to interact with an API
 SERVICE = build('plus', 'v1')
 
-# what is this?
 app.secret_key = ''.join(random.choice(string.ascii_uppercase + string.digits)
                          for x in xrange(32))
 
 # create an upload URL for the browser to upload a blob to
-# upload_url = blobstore.create_upload_url('/upload')
-
-# create an upload form
-# self.response.out.write('<html><body>')
-# self.response.out.write('<form action="%s" method="POST" enctype="multipart/form-data">' % upload_url)
-# self.response.out.write("""Upload File: <input type="file" name="file"><br> <input type="submit"
-#    name="submit" value="Submit"> </form></body></html>""")
-
+# if success, reroute to /upload after uploading to blobstore
+upload_url = blobstore.create_upload_url('/upload')
 
 # map the urls '/' and '/index' to this function
 @app.route('/')
@@ -62,8 +57,8 @@ def index():
 	# make_response is a Flask function that converts a view functoin to a response object
 	response = make_response(render_template("index.html", 
 											TITLE = APPLICATION_NAME, 
-											CLIENT_ID= Client_ID
-											#STATE = state
+											CLIENT_ID= Client_ID,
+											ACTION = upload_url
 											))
 	response.headers['Content-Type'] = 'text/html'
 	return response
@@ -79,7 +74,6 @@ def connect():
 		oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
 
 		# once the oauth has gone through, go to the postmessage endpoint
-		# make an app.route that prints out "woohoo" and switch postmessage to that route
 		oauth_flow.redirect_uri = 'postmessage';
 
 		# exchange authorization code for a credentials object
@@ -142,13 +136,13 @@ def disonnect():
 
 @app.route('/moment', methods=['POST'])
 def moment():
-        user_agent = request.headers.get('User-Agent')
-	credentials = AccessTokenCredentials(
-            session.get('credentials'), user_agent)
+	user_agent = request.headers.get('User-Agent')
+	credentials = AccessTokenCredentials(session.get('credentials'), user_agent)
 	if credentials is None:
 		response = make_response(json.dumps('Current user not connected.'), 401)
 		response.headers['Content-Type'] = 'application/json'
 		return response
+
 	try:
 		http = httplib2.Http()
 		# authorize an instance of Http with a set of credentials
@@ -174,3 +168,14 @@ def moment():
 		response = make_response(json.dumps('Failed to refresh access token.'), 500)
 		response.headers['Content-Type'] = 'application/json'
 		return response
+
+@app.route('/upload', methods=['POST', 'GET'])
+def upload():
+	f = request.files['file']
+	header = f.headers['Content-Type']
+	parsed_header = parse_options_header(header)
+	blob_key = parsed_header[1]['blob-key']
+	blob_info = blobstore.get(blob_key)
+	response = make_response(blob_info.open().read())
+	response.headers['Content-Type'] = blob_info.content_type
+	return response

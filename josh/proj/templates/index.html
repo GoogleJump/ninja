@@ -26,7 +26,11 @@
     <div id="connected"></div>
 
     <h2>Inserting a moment</h2>
-    <button id="upload">Upload a moment to your Google+ profile</button>
+    <form action= "{{ ACTION }}" method="POST" enctype="multipart/form-data">
+        Upload File:
+        <input type="file" name="file"><br>
+        <input type="submit" name="submit" id = "upload" value="Submit">
+    </form>
     <div id="moment"></div>
 </div>
 
