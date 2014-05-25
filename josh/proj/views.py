@@ -142,7 +142,7 @@ def moment():
 	return response
 
 @app.route('/create_moment', methods=['POST'])
-def create_moment(blob_key):
+def create_moment(title, blob_key, message):
 	user_agent = request.headers.get('User-Agent')
 	credentials = AccessTokenCredentials(session.get('credentials'), user_agent)
 	if credentials is None:
@@ -164,8 +164,8 @@ def create_moment(blob_key):
 					"target": {
 						"id": "target-id-1",
 						"type":"http://schemas.google.com/AddActivity",
-						"name": "The Google+ Platform",
-						"description": "A page that describes just how awesome Google+ is!",
+						"name": title,
+						"description": message,
 						"image": image_url
 					}
 				}
@@ -184,11 +184,19 @@ def create_moment(blob_key):
 
 @app.route('/upload', methods=['POST'])
 def upload():
+	# retrieve the blob key for the uploaded file
 	f = request.files['file']
 	header = f.headers['Content-Type']
 	parsed_header = parse_options_header(header)
-	blob_key = parsed_header[1]['blob-key']
-	return create_moment(blob_key)
+	bkey = parsed_header[1]['blob-key']
+
+	# retrieve the title
+	title = request.form['title']
+
+	# retrieve the text message
+	msg = request.form['description']
+
+	return create_moment(title, bkey, msg)
 
 @app.route('/img/<bkey>')
 def img(blob_key):
