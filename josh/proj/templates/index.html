@@ -25,13 +25,10 @@
     <h1>Welcome</h1>
     <div id="connected"></div>
 
-    <h2>Inserting a moment</h2>
-    <form action= "{{ ACTION }}" method="POST" enctype="multipart/form-data">
-        Upload File:
-        <input type="file" name="file"><br>
-        <input type="submit" name="submit" id = "upload" value="Submit">
-    </form>
-    <div id="moment"></div>
+    <div id="moment" class="hidden">
+        <h2>Inserting a moment</h2>
+        <a href="/moment">Click to insert a moment</a>
+    </div>
 </div>
 
 <script type = "text/javascript">
@@ -68,6 +65,7 @@
               console.log(result);
               $('#connected').empty();
               $('#connected').append($("<p>You're connected!</p>"));
+              $('#moment').show();
             },
             // prevents data from being transformed into a query string
             processData: false,
@@ -93,25 +91,8 @@
         });
     }
 
-    /*
-    function insertMoment() {
-        $.ajax({
-            type: 'POST',
-            url: window.location.href + 'moment',
-            success: function(result) {
-                console.log('insert moment: ' + result);
-                $('#moment').append($("<p>A moment has been inserted on the About tab of your profile!</p>"));
-            },
-            error: function(e) {
-                console.log(e);
-            }
-        });
-    }
-    */
-
     $(document).ready(function() {
         $('#disconnect').click(disconnectServer);
-        //$('#upload').click(insertMoment);
     });
 </script>
 

@@ -26,11 +26,11 @@ import httplib2
 from google.appengine.ext import blobstore
 from google.appengine.ext.webapp import blobstore_handlers
 
+from werkzeug import parse_options_header
+
 import json
 import random
 import string
-
-from werkzeug import parse_options_header
 
 # set the application name to be filled in on a template
 APPLICATION_NAME = 'Bouncehouse'
@@ -44,10 +44,6 @@ SERVICE = build('plus', 'v1')
 app.secret_key = ''.join(random.choice(string.ascii_uppercase + string.digits)
                          for x in xrange(32))
 
-# create an upload URL for the browser to upload a blob to
-# if success, reroute to /upload after uploading to blobstore
-upload_url = blobstore.create_upload_url('/upload')
-
 # map the urls '/' and '/index' to this function
 @app.route('/')
 @app.route('/index')
@@ -57,8 +53,7 @@ def index():
 	# make_response is a Flask function that converts a view functoin to a response object
 	response = make_response(render_template("index.html", 
 											TITLE = APPLICATION_NAME, 
-											CLIENT_ID= Client_ID,
-											ACTION = upload_url
+											CLIENT_ID= Client_ID
 											))
 	response.headers['Content-Type'] = 'text/html'
 	return response
@@ -134,8 +129,20 @@ def disonnect():
 		response.headers['Content-Type'] = 'application/json'
 		return response
 
-@app.route('/moment', methods=['POST'])
-def moment(blob_key):
+@app.route('/moment', methods=['GET'])
+def moment():
+	# create an upload URL for the browser to upload a blob to
+	# if success, reroute to /upload after uploading to blobstore
+	upload_url = blobstore.create_upload_url('/upload')
+
+	response = make_response(render_template("moment.html", 
+											TITLE = APPLICATION_NAME, 
+											ACTION = upload_url
+											))
+	return response
+
+@app.route('/create_moment', methods=['POST'])
+def create_moment(blob_key):
 	user_agent = request.headers.get('User-Agent')
 	credentials = AccessTokenCredentials(session.get('credentials'), user_agent)
 	if credentials is None:
@@ -160,31 +167,32 @@ def moment(blob_key):
 						"name": "The Google+ Platform",
 						"description": "A page that describes just how awesome Google+ is!",
 						"image": image_url
-						#"image": "https://developers.google.com/+/plugins/snippet/examples/thing.png"
 					}
 				}
 
 		google_request = SERVICE.moments().insert(userId='me', collection='vault', body=moment)
 		result = google_request.execute(http=http)
-		response = make_response(json.dumps(result), 200)
-		response.headers['Content-Type'] = 'application/json'
+		#response = make_response(json.dumps(result), 200)
+		#response.headers['Content-Type'] = 'application/json'
+		response = make_response(render_template("uploaded.html"))
+		response.headers['Content-Type'] = 'text/html'
 		return response
 	except AccessTokenRefreshError:
 		response = make_response(json.dumps('Failed to refresh access token.'), 500)
 		response.headers['Content-Type'] = 'application/json'
 		return response
 
-@app.route('/upload', methods=['POST', 'GET'])
+@app.route('/upload', methods=['POST'])
 def upload():
 	f = request.files['file']
 	header = f.headers['Content-Type']
 	parsed_header = parse_options_header(header)
 	blob_key = parsed_header[1]['blob-key']
-	return moment(blob_key)
+	return create_moment(blob_key)
 
 @app.route('/img/<bkey>')
-def img(bkey):
-	blob_info = blobstore.get(bkey)
+def img(blob_key):
+	blob_info = blobstore.get(blob_key)
 	response = make_response(blob_info.open().read())
 	response.headers['Content-Type'] = blob_info.content_type
 	return response

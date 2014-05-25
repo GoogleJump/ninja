@@ -1,5 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Insert a moment</h1>
 <form action= "{{ ACTION }}" method="POST" enctype="multipart/form-data">
-	Upload File:
-	<input type="file" name="file"><br>
+	Write a message: <input type="text" name="description"><br>
+	Attach a file: <input type="file" name="file"><br>
 	<input type="submit" name="submit" value="Submit">
 </form>
+
+{% endblock %}
