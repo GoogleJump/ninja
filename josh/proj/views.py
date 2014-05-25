@@ -198,7 +198,7 @@ def upload():
 
 	return create_moment(title, bkey, msg)
 
-@app.route('/img/<bkey>')
+@app.route('/img/<blob_key>')
 def img(blob_key):
 	blob_info = blobstore.get(blob_key)
 	response = make_response(blob_info.open().read())
