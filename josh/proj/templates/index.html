@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1>Hello!</h1>
+<h1>Welcome to BounceHouse!</h1>
 
 <div id="gConnect">
 	<!-- 
@@ -9,23 +9,19 @@
 		The data-requestvisibleactions attribute defines the type of moments the app is requesting to write
 		The callback function handles the result of the authorization. 
 	-->
-    <div id="connect">
-        <button class="g-signin"
-            data-scope="https://www.googleapis.com/auth/plus.login"
-            data-requestvisibleactions="http://schemas.google.com/AddActivity"
-            data-clientId="{{ CLIENT_ID }}"
-            data-accesstype="offline"
-            data-callback="onSignInCallback"
-            data-theme="dark"
-            data-cookiepolicy="single_host_origin">
-        </button>
-    </div>
+    <button class="g-signin"
+        data-scope="https://www.googleapis.com/auth/plus.login"
+        data-requestvisibleactions="http://schemas.google.com/AddActivity"
+        data-clientId="{{ CLIENT_ID }}"
+        data-accesstype="offline"
+        data-callback="onSignInCallback"
+        data-theme="dark"
+        data-cookiepolicy="single_host_origin">
+    </button>
+</div>
+<div id="connected" class="hidden">
     <button id="disconnect" >Disconnect your Google account from this app</button>
-
-    <h1>Welcome</h1>
-    <div id="connected"></div>
-
-    <div id="moment" class="hidden">
+    <div id="moment">
         <h2>Inserting a moment</h2>
         <a href="/moment">Click to insert a moment</a>
     </div>
@@ -40,7 +36,7 @@
         console.log(authResult);
 
         // Hide the sign-in button
-        $('#connect').hide('slow');
+        $('#gConnect').hide('slow');
 
         this.authResult = authResult;
         connectServer();
@@ -63,9 +59,7 @@
             // a function to call if the request succeeds
             success: function(result) {                         
               console.log(result);
-              $('#connected').empty();
-              $('#connected').append($("<p>You're connected!</p>"));
-              $('#moment').show();
+              $('#connected').show();
             },
             // prevents data from being transformed into a query string
             processData: false,
@@ -76,7 +70,8 @@
 
     function disconnectServer() {
         // redisplay the sign-in button
-        $('#connect').show('slow');
+        $('#gConnect').show('slow');
+        $('#connected').hide('slow');
 
         $.ajax({
             type: 'POST',
