@@ -1,3 +1,39 @@
-.hidden {
+body {
+	background-color: rgb(225, 225, 225);
+}
+
+#container {
+	width: 90%;
+	min-width: 960px;
+	margin: 0 auto;
+}
+
+.form_container {
+	width: 300px;
+}
+
+#header {
+	height: 50px;
+	background-color: rgb(24, 105, 172);
+	border-bottom: 2px solid white;
+	margin-bottom: 5px;
+	padding: 10px 0 10px 15px;
+}
+
+.navigation li{
+	display: inline-block;
+	margin-right: 15px;
+}
+
+.navigation a {
+	color: white;
+	text-decoration: none;
+}
+
+.navigation a:hover{
+	text-decoration: underline;
+}
+
+.not_visible {
 	display: none;
 }

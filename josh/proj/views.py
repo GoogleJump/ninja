@@ -8,6 +8,8 @@ from flask import session
 # used to parse incoming request data; provides access through the global request object
 from flask import request
 
+from flask import redirect
+
 # OAuth 2.0 steps require your application to potentially redirect a browser multiple times. 
 # A Flow object has functions that help the application take these steps and acquire credentials.
 from oauth2client.client import flow_from_clientsecrets
@@ -172,8 +174,6 @@ def create_moment(title, blob_key, message):
 
 		google_request = SERVICE.moments().insert(userId='me', collection='vault', body=moment)
 		result = google_request.execute(http=http)
-		#response = make_response(json.dumps(result), 200)
-		#response.headers['Content-Type'] = 'application/json'
 		response = make_response(render_template("uploaded.html"))
 		response.headers['Content-Type'] = 'text/html'
 		return response
@@ -186,12 +186,16 @@ def create_moment(title, blob_key, message):
 def upload():
 	# retrieve the blob key for the uploaded file
 	f = request.files['file']
+
 	header = f.headers['Content-Type']
 	parsed_header = parse_options_header(header)
 	bkey = parsed_header[1]['blob-key']
 
 	# retrieve the title
 	title = request.form['title']
+
+	if title == '':
+		return redirect('/moment')
 
 	# retrieve the text message
 	msg = request.form['description']
@@ -200,6 +204,8 @@ def upload():
 
 @app.route('/img/<blob_key>')
 def img(blob_key):
+	""" Serve an uploaded image """
+
 	blob_info = blobstore.get(blob_key)
 	response = make_response(blob_info.open().read())
 	response.headers['Content-Type'] = blob_info.content_type

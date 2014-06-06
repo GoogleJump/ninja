@@ -7,6 +7,7 @@
 		{% endif %}
 
 		<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+		<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
 
 		<!-- Load the script for a Google + sign-in button asynchronously -->
 		<script type="text/javascript">
@@ -23,7 +24,13 @@
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js" ></script>
 	</head>
 	<body>
-		<a href="/">Home</a>
+		<div id="header">
+			<ul class="navigation">
+				<li><a href="/">Return to Home</a></li>
+				<li><a href="#">Settings</a></li>
+				<li><a href="#">About</a></li>
+			</ul>
+		</div>
 		{% block content %}{% endblock %}
 	</body>
 </html>
