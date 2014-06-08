@@ -4,7 +4,7 @@
 <div id="container">
 	<h1>Insert a moment</h1>
 	<div class="form_container">
-		<form role="form" action= "{{ ACTION }}" method="POST" enctype="multipart/form-data">
+		<form role="form" onsumbit = "return validateForm();" action= "{{ ACTION }}" method="POST" enctype="multipart/form-data" id="upload-form" >
 			<div class="form-group">
 				<label for="title">Title</label>
 				<input type="text" class="form-control" id="title" placeholder="Enter post title" name="title">
@@ -22,5 +22,44 @@
 		</form>
 	</div>
 </div>
+
+<script type = "text/javascript">
+
+	$(document).ready(function() {
+
+		var form = $('#upload-form');
+
+		$(form).submit(function(event) {
+
+			var title = $('#title').val();
+			var desc = $('#description').val();
+			var file = $('#file').val;
+
+			alert(file);
+
+			if (title == "") {
+				event.preventDefault();
+				alert("please include a title");
+			}
+
+			else if (desc == "") {
+				event.preventDefault();
+				alert("please include a description");
+			}
+
+			else if (file == "") {
+				event.preventDefault();
+				alert("please upload a photo");
+			}
+
+			else {
+				return;
+			}
+
+		});
+
+	});
+
+</script>
 
 {% endblock %}
