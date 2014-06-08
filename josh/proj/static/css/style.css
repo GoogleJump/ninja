@@ -8,6 +8,12 @@ body {
 	margin: 0 auto;
 }
 
+.error {
+	color: rgb(240, 50, 50);
+	padding-left: 5px;
+	font-size: 0.75em;
+}
+
 .form_container {
 	width: 300px;
 }

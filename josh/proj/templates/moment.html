@@ -14,7 +14,7 @@
 				<input type="text" class="form-control" id="description" placeholder="Enter post description" name="description" required>
 			</div>
 			<div class="form-group">
-				<label for="file">Choose a file</label>
+				<label for="file">Choose a file (jpg, jpeg, or png)</label>
 				<input type="file" class="form-control" id="file" name="file">
 			</div>
 
@@ -23,7 +23,8 @@
 	</div>
 </div>
 
-<script type ="text/javascript" src="{{ url_for('static', filename='jquery.validate.js') }} " ></script>
+<script src="http://jquery.bassistance.de/validate/jquery.validate.js"></script>
+<script src="http://jquery.bassistance.de/validate/additional-methods.js"></script>
 
 <script type = "text/javascript">
 
