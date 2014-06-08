@@ -106,9 +106,8 @@ def connect():
 @app.route('/disconnect', methods=['POST'])
 def disonnect():
 	# Only disconnect a connected user.
-        user_agent = request.headers.get('User-Agent')
-	credentials = AccessTokenCredentials(
-            session.get('credentials'), user_agent)
+	user_agent = request.headers.get('User-Agent')
+	credentials = AccessTokenCredentials(session.get('credentials'), user_agent)
 	if credentials is None:
 		response = make_response(json.dumps('Current user not connected.'), 401)
 		response.headers['Content-Type'] = 'application/json'
