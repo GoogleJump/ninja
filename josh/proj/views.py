@@ -19,6 +19,8 @@ from oauth2client.client import AccessTokenCredentials
 # an error trying to refresh an expired access token
 from oauth2client.client import AccessTokenRefreshError
 
+from oauth2client.client import AccessTokenCredentialsError
+
 from apiclient.discovery import build
 
 # a comprehensive HTTP client library
@@ -178,6 +180,10 @@ def create_moment(title, blob_key, message):
 		return response
 	except AccessTokenRefreshError:
 		response = make_response(json.dumps('Failed to refresh access token.'), 500)
+		response.headers['Content-Type'] = 'application/json'
+		return response
+	except AccessTokenCredentialsError:
+		response = make_response(json.dumps('Access token is invalid or expired and cannot be refreshed.'), 500)
 		response.headers['Content-Type'] = 'application/json'
 		return response
 
