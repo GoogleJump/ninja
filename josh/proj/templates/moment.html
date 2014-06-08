@@ -7,11 +7,11 @@
 		<form role="form" onsumbit = "return validateForm();" action= "{{ ACTION }}" method="POST" enctype="multipart/form-data" id="upload-form" >
 			<div class="form-group">
 				<label for="title">Title</label>
-				<input type="text" class="form-control" id="title" placeholder="Enter post title" name="title">
+				<input type="text" class="form-control" id="title" placeholder="Enter post title" name="title" required>
 			</div>
 			<div class="form-group">
 				<label for="description">Description</label>
-				<input type="text" class="form-control" id="description" placeholder="Enter post description" name="description">
+				<input type="text" class="form-control" id="description" placeholder="Enter post description" name="description" required>
 			</div>
 			<div class="form-group">
 				<label for="file">Choose a file</label>
@@ -23,39 +23,20 @@
 	</div>
 </div>
 
+<script type ="text/javascript" src="{{ url_for('static', filename='jquery.validate.js') }} " ></script>
+
 <script type = "text/javascript">
 
 	$(document).ready(function() {
 
-		var form = $('#upload-form');
+		$('#upload-form').validate({
 
-		$(form).submit(function(event) {
-
-			var title = $('#title').val();
-			var desc = $('#description').val();
-			var file = $('#file').val;
-
-			alert(file);
-
-			if (title == "") {
-				event.preventDefault();
-				alert("please include a title");
+			rules: {
+			    file: {
+			      required: true,
+			      extension: "jpg|jpeg|png"
+			    }
 			}
-
-			else if (desc == "") {
-				event.preventDefault();
-				alert("please include a description");
-			}
-
-			else if (file == "") {
-				event.preventDefault();
-				alert("please upload a photo");
-			}
-
-			else {
-				return;
-			}
-
 		});
 
 	});
