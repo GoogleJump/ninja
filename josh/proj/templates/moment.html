@@ -1,12 +1,47 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1>Insert a moment</h1>
-<form action= "{{ ACTION }}" method="POST" enctype="multipart/form-data">
-	Title: <input type="text" name="title"><br>
-	Message: <input type="text" name="description"><br>
-	File: <input type="file" name="file"><br>
-	<input type="submit" name="submit" value="Submit">
-</form>
+<div id="container">
+	<h1>Insert a moment</h1>
+	<div class="form_container">
+		<form role="form" action= "{{ ACTION }}" method="POST" enctype="multipart/form-data" id="upload-form" >
+			<div class="form-group">
+				<label for="title">Title</label>
+				<input type="text" class="form-control" id="title" placeholder="Enter post title" name="title" required>
+			</div>
+			<div class="form-group">
+				<label for="description">Description</label>
+				<input type="text" class="form-control" id="description" placeholder="Enter post description" name="description" required>
+			</div>
+			<div class="form-group">
+				<label for="file">Choose a file (jpg, jpeg, or png)</label>
+				<input type="file" class="form-control" id="file" name="file">
+			</div>
+
+			<button type="submit" class="btn btn-primary" name="submit">Submit</button>
+		</form>
+	</div>
+</div>
+
+<script src="http://jquery.bassistance.de/validate/jquery.validate.js"></script>
+<script src="http://jquery.bassistance.de/validate/additional-methods.js"></script>
+
+<script type = "text/javascript">
+
+	$(document).ready(function() {
+
+		$('#upload-form').validate({
+
+			rules: {
+			    file: {
+			      required: true,
+			      extension: "jpg|jpeg|png"
+			    }
+			}
+		});
+
+	});
+
+</script>
 
 {% endblock %}

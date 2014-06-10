@@ -8,6 +8,8 @@ from flask import session
 # used to parse incoming request data; provides access through the global request object
 from flask import request
 
+from flask import redirect
+
 # OAuth 2.0 steps require your application to potentially redirect a browser multiple times. 
 # A Flow object has functions that help the application take these steps and acquire credentials.
 from oauth2client.client import flow_from_clientsecrets
@@ -16,6 +18,8 @@ from oauth2client.client import FlowExchangeError
 from oauth2client.client import AccessTokenCredentials
 # an error trying to refresh an expired access token
 from oauth2client.client import AccessTokenRefreshError
+
+from oauth2client.client import AccessTokenCredentialsError
 
 from apiclient.discovery import build
 
@@ -104,9 +108,8 @@ def connect():
 @app.route('/disconnect', methods=['POST'])
 def disonnect():
 	# Only disconnect a connected user.
-        user_agent = request.headers.get('User-Agent')
-	credentials = AccessTokenCredentials(
-            session.get('credentials'), user_agent)
+	user_agent = request.headers.get('User-Agent')
+	credentials = AccessTokenCredentials(session.get('credentials'), user_agent)
 	if credentials is None:
 		response = make_response(json.dumps('Current user not connected.'), 401)
 		response.headers['Content-Type'] = 'application/json'
@@ -172,8 +175,6 @@ def create_moment(title, blob_key, message):
 
 		google_request = SERVICE.moments().insert(userId='me', collection='vault', body=moment)
 		result = google_request.execute(http=http)
-		#response = make_response(json.dumps(result), 200)
-		#response.headers['Content-Type'] = 'application/json'
 		response = make_response(render_template("uploaded.html"))
 		response.headers['Content-Type'] = 'text/html'
 		return response
@@ -181,17 +182,25 @@ def create_moment(title, blob_key, message):
 		response = make_response(json.dumps('Failed to refresh access token.'), 500)
 		response.headers['Content-Type'] = 'application/json'
 		return response
+	except AccessTokenCredentialsError:
+		response = make_response(json.dumps('Access token is invalid or expired and cannot be refreshed.'), 500)
+		response.headers['Content-Type'] = 'application/json'
+		return response
 
 @app.route('/upload', methods=['POST'])
 def upload():
 	# retrieve the blob key for the uploaded file
 	f = request.files['file']
+
 	header = f.headers['Content-Type']
 	parsed_header = parse_options_header(header)
 	bkey = parsed_header[1]['blob-key']
 
 	# retrieve the title
 	title = request.form['title']
+
+	if title == '':
+		return redirect('/moment')
 
 	# retrieve the text message
 	msg = request.form['description']
@@ -200,6 +209,8 @@ def upload():
 
 @app.route('/img/<blob_key>')
 def img(blob_key):
+	""" Serve an uploaded image """
+
 	blob_info = blobstore.get(blob_key)
 	response = make_response(blob_info.open().read())
 	response.headers['Content-Type'] = blob_info.content_type

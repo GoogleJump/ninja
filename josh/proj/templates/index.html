@@ -1,29 +1,43 @@
 {% extends "base.html" %}
 {% block content %}
 
-<h1>Welcome to BounceHouse!</h1>
+<div id="container">
+    <h1>Welcome to BounceHouse!</h1>
 
-<div id="gConnect">
-	<!-- 
-		The data-scope attribute indicates the access to a users data the app requires
-		The data-requestvisibleactions attribute defines the type of moments the app is requesting to write
-		The callback function handles the result of the authorization. 
-	-->
-    <button class="g-signin"
-        data-scope="https://www.googleapis.com/auth/plus.login"
-        data-requestvisibleactions="http://schemas.google.com/AddActivity"
-        data-clientId="{{ CLIENT_ID }}"
-        data-accesstype="offline"
-        data-callback="onSignInCallback"
-        data-theme="dark"
-        data-cookiepolicy="single_host_origin">
-    </button>
-</div>
-<div id="connected" class="hidden">
-    <button id="disconnect" >Disconnect your Google account from this app</button>
-    <div id="moment">
-        <h2>Inserting a moment</h2>
-        <a href="/moment">Click to insert a moment</a>
+    <div id="gConnect">
+    	<!-- 
+    		The data-scope attribute indicates the access to a users data the app requires
+    		The data-requestvisibleactions attribute defines the type of moments the app is requesting to write
+    		The callback function handles the result of the authorization. 
+    	-->
+        <button class="g-signin"
+            data-scope="https://www.googleapis.com/auth/plus.login"
+            data-requestvisibleactions="http://schemas.google.com/AddActivity"
+            data-clientId="{{ CLIENT_ID }}"
+            data-accesstype="offline"
+            data-callback="onSignInCallback"
+            data-theme="dark"
+            data-cookiepolicy="single_host_origin">
+        </button>
+    </div>
+    <div id="connected" class="not_visible">
+        <div>
+            <h4>Google +</h4>
+            <a href="/moment">
+                <button id="gmoment" class="btn btn-primary">Insert a moment</button>
+            </a>
+            <button id="gdisconnect" class="btn">Sign out</button>
+        </div>
+        <div>
+            <h4>Facebook</h4>
+            <button class="btn btn-primary">Post to graph</button>
+            <button class="btn">Sign out</button>
+        </div>
+        <div>
+            <h4>Twitter</h4>
+            <button class="btn btn-primary">Upload a photo</button>
+            <button class="btn">Sign out</button>
+        </div>
     </div>
 </div>
 
@@ -87,7 +101,7 @@
     }
 
     $(document).ready(function() {
-        $('#disconnect').click(disconnectServer);
+        $('#gdisconnect').click(disconnectServer);
     });
 </script>
 

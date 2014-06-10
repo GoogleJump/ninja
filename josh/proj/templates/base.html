@@ -6,7 +6,8 @@
 			<title>Team Ninja</title>
 		{% endif %}
 
-		<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+		<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+		<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" rel="stylesheet">
 
 		<!-- Load the script for a Google + sign-in button asynchronously -->
 		<script type="text/javascript">
@@ -23,7 +24,14 @@
 		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js" ></script>
 	</head>
 	<body>
-		<a href="/">Home</a>
+		<div id="header">
+			<h3 class="title"><a href="/" class="nav">Bouncehouse</a></h3>
+			<ul class="navigation">
+				<li><a href="/" class="nav">Return to Home</a></li>
+				<li><a href="#" class="nav">Settings</a></li>
+				<li><a href="#" class="nav">About</a></li>
+			</ul>
+		</div>
 		{% block content %}{% endblock %}
 	</body>
 </html>
