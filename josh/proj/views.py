@@ -22,7 +22,7 @@ from oauth2client.client import AccessTokenRefreshError
 from oauth2client.client import AccessTokenCredentialsError
 
 from apiclient.discovery import build
-
+from Oauth import *
 # a comprehensive HTTP client library
 import httplib2
 
@@ -47,6 +47,9 @@ SERVICE = build('plus', 'v1')
 
 app.secret_key = ''.join(random.choice(string.ascii_uppercase + string.digits)
                          for x in xrange(32))
+
+#for twitter authentication
+auth = 0
 
 # map the urls '/' and '/index' to this function
 @app.route('/')
@@ -215,3 +218,24 @@ def img(blob_key):
 	response = make_response(blob_info.open().read())
 	response.headers['Content-Type'] = blob_info.content_type
 	return response
+
+@app.route('/twit/')
+def First_Part():
+    global auth
+    auth = webAuthentication()
+    return redirect(str(auth['auth_url']))
+
+@app.route('/complete/')
+def Second_Part():
+    global auth
+    APP_KEY = 'b1WTyzKmLnG7KwnDcYpiQ'
+
+    APP_SECRET = 'gzKci8Gys0i831zt7gPq3fEpG4qq9kgOINfbKhS8'
+
+    oauth_verifier = request.args['oauth_verifier']
+
+    twitter = Twython(APP_KEY, APP_SECRET, auth['oauth_token'], auth['oauth_token_secret'])
+
+    final_step = twitter.get_authorized_tokens(oauth_verifier)
+
+    return "all good"
