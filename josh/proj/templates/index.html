@@ -7,7 +7,7 @@
     <div id="gConnect">
     	<!-- 
     		The data-scope attribute indicates the access to a users data the app requires
-    		The data-requestvisibleactions attribute defines the type of moments the app is requesting to write
+    		The data-requestvisible actions attribute defines the type of moments the app is requesting to write
     		The callback function handles the result of the authorization. 
     	-->
         <button class="g-signin"
@@ -15,7 +15,7 @@
             data-requestvisibleactions="http://schemas.google.com/AddActivity"
             data-clientId="{{ CLIENT_ID }}"
             data-accesstype="offline"
-            data-callback="onSignInCallback"
+            data-callback="googleCallback"
             data-theme="dark"
             data-cookiepolicy="single_host_origin">
         </button>
@@ -45,7 +45,7 @@
 
     var authResult = undefined;
 
-    function onSignInCallback(authResult) {
+    function googleCallback(authResult) {
       if (authResult['access_token']) {     // the user is signed in
         console.log(authResult);
 
@@ -53,13 +53,13 @@
         $('#gConnect').hide('slow');
 
         this.authResult = authResult;
-        connectServer();
+        connectGoogle();
       } else {
         console.log('Sign-in state: ' + authResult['error']);
       }
     }
 
-    function connectServer() {
+    function connectGoogle() {
         console.log(authResult.code);
         // Ajax is a group of web development techniques used on the client-side
         // It creates asynchronous Web Applications 
@@ -67,7 +67,7 @@
         $.ajax({
             type: 'POST',
             // the url to which the request is sent
-            url: window.location.href + 'connect',
+            url: window.location.href + 'connect-google',
             // what is this?
             contentType: 'application/octet-stream; charset=utf-8',
             // a function to call if the request succeeds
@@ -82,14 +82,14 @@
         });
     }
 
-    function disconnectServer() {
+    function disconnectGoogle() {
         // redisplay the sign-in button
         $('#gConnect').show('slow');
         $('#connected').hide('slow');
 
         $.ajax({
             type: 'POST',
-            url: window.location.href + 'disconnect',
+            url: window.location.href + 'disconnect-google',
             async: false,
             success: function(result) {
                 console.log('revoke response: ' + result);
@@ -101,7 +101,7 @@
     }
 
     $(document).ready(function() {
-        $('#gdisconnect').click(disconnectServer);
+        $('#gdisconnect').click(disconnectGoogle);
     });
 </script>
 

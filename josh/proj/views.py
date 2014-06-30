@@ -60,13 +60,13 @@ def index():
 	# make_response is a Flask function that converts a view functoin to a response object
 	response = make_response(render_template("index.html", 
 											TITLE = APPLICATION_NAME, 
-											CLIENT_ID= Client_ID
+											CLIENT_ID = Client_ID
 											))
 	response.headers['Content-Type'] = 'text/html'
 	return response
 
 # access the URL with the POST method, enabling the browser to post new information
-@app.route('/connect', methods=['POST'])
+@app.route('/connect-google', methods=['POST'])
 def connect():
 	"""Exchange the one-time authorization code for a token and store the token in the session."""
 	code = request.data
@@ -108,7 +108,7 @@ def connect():
 	response.headers['Content-Type'] = 'application/json'
 	return response
 
-@app.route('/disconnect', methods=['POST'])
+@app.route('/disconnect-google', methods=['POST'])
 def disonnect():
 	# Only disconnect a connected user.
 	user_agent = request.headers.get('User-Agent')
