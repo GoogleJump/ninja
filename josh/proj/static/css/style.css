@@ -2,10 +2,18 @@ body {
 	background-color: rgb(225, 225, 225);
 }
 
+.connect {
+	margin: 15px 0;
+}
+
 #container {
 	width: 90%;
 	min-width: 960px;
 	margin: 0 auto;
+}
+
+.description {
+	font-style: italic;
 }
 
 .error {

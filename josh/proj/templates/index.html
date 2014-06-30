@@ -2,156 +2,174 @@
 {% block content %}
 
 <div id="container">
-    <h1>Welcome to BounceHouse!</h1>
-
-    <div id="gConnect">
-    	<!-- 
-    		The data-scope attribute indicates the access to a users data the app requires
-    		The data-requestvisible actions attribute defines the type of moments the app is requesting to write
-    		The callback function handles the result of the authorization. 
-    	-->
-        <button class="g-signin"
-            data-scope="https://www.googleapis.com/auth/plus.login"
-            data-requestvisibleactions="http://schemas.google.com/AddActivity"
-            data-clientId="{{ CLIENT_ID }}"
-            data-accesstype="offline"
-            data-callback="googleCallback"
-            data-theme="dark"
-            data-cookiepolicy="single_host_origin">
-        </button>
-    </div>
-    <div id="connected" class="not_visible">
-        <div>
-            <h4>Google +</h4>
-            <a href="/moment">
-                <button id="gmoment" class="btn btn-primary">Insert a moment</button>
-            </a>
-            <button id="gdisconnect" class="btn">Sign out</button>
-        </div>
-        <div>
-            <h4>Facebook</h4>
-            <button class="btn btn-primary">Post to graph</button>
-            <button class="btn">Sign out</button>
-        </div>
-        <div>
-            <h4>Twitter</h4>
-            <button class="btn btn-primary">Upload a photo</button>
-            <button class="btn">Sign out</button>
-        </div>
-    </div>
+	<h1>Welcome to BounceHouse!</h1>
+	<p class="description">Sign in with Google+, Twitter, or Facebook to get started</p>
+	<div class = "button-container">
+		<div class="connect" id="google-connect">
+		<!-- 
+			data-scope indicates access to user's data the app requires
+			data-requestvisibleactions defines type of moments the app is requesting to write
+			callback handles the result of the authorization. 
+		-->
+		<button class="g-signin"
+			data-scope="https://www.googleapis.com/auth/plus.login"
+			data-requestvisibleactions="http://schemas.google.com/AddActivity"
+			data-clientId="{{ CLIENT_ID }}"
+			data-accesstype="offline"
+			data-callback="googleCallback"
+			data-theme="dark"
+			data-cookiepolicy="single_host_origin">
+		</button>
+		</div>
+		<div class="connect" id="twitter-connect">
+		<form action="http://ignore.ninja-bounce-house.appspot.com/twit/">
+		  <input type="image" src="https://dev.twitter.com/sites/default/files/images_documentation/sign-in-with-twitter-gray.png" />
+		</form>
+		</div>
+		<div class="connect" id="facebook-connect">
+			<fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+			</fb:login-button>
+			<div id="status"></div>
+		</div>
+	</div>
+	<div id="connected" class="not_visible">
+		<div>
+			<h4>Google +</h4>
+			<a href="/moment">
+				<button id="google-moment" class="btn btn-primary">Insert a moment</button>
+			</a>
+			<button id="google-disconnect" class="btn">Sign out</button>
+		</div>
+		<div>
+			<h4>Facebook</h4>
+			<button class="btn btn-primary">Post to graph</button>
+			<button class="btn">Sign out</button>
+		</div>
+		<div>
+			<h4>Twitter</h4>
+			<button class="btn btn-primary">Upload a photo</button>
+			<button class="btn">Sign out</button>
+		</div>
+		</div>
+	</div>
 </div>
 
-<script type = "text/javascript">
+<script src="{{ url_for('static', filename='js/gplus.js') }}"></script>
 
-    var authResult = undefined;
+<script type="text/javascript">
 
-    function googleCallback(authResult) {
-      if (authResult['access_token']) {     // the user is signed in
-        console.log(authResult);
+	// Google+ sign-in button callback function
+	var authResult = undefined;
 
-        // Hide the sign-in button
-        $('#gConnect').hide('slow');
+	function googleCallback(authResult) {
+	  if (authResult['access_token']) {     // the user is signed in
+		console.log(authResult);
 
-        this.authResult = authResult;
-        connectGoogle();
-      } else {
-        console.log('Sign-in state: ' + authResult['error']);
-      }
-    }
+		// Hide the sign-in button
+		$('#google-connect').hide('slow');
 
-    function connectGoogle() {
-        console.log(authResult.code);
-        // Ajax is a group of web development techniques used on the client-side
-        // It creates asynchronous Web Applications 
-        // They can send and retrieve data in background without interfering with the existing page
-        $.ajax({
-            type: 'POST',
-            // the url to which the request is sent
-            url: window.location.href + 'connect-google',
-            // what is this?
-            contentType: 'application/octet-stream; charset=utf-8',
-            // a function to call if the request succeeds
-            success: function(result) {                         
-              console.log(result);
-              $('#connected').show();
-            },
-            // prevents data from being transformed into a query string
-            processData: false,
-            // data to be sent to the server
-            data: this.authResult.code
-        });
-    }
+		this.authResult = authResult;
+		connectGoogle();
+	  } else {
+		console.log('Sign-in state: ' + authResult['error']);
+	  }
+	}
 
-    function disconnectGoogle() {
-        // redisplay the sign-in button
-        $('#gConnect').show('slow');
-        $('#connected').hide('slow');
+	function connectGoogle() {
+		console.log(authResult.code);
+		// Ajax is a group of web development techniques used on the client-side
+		// It creates asynchronous Web Applications 
+		// They can send and retrieve data in background without interfering with the existing page
+		$.ajax({
+			type: 'POST',
+			// the url to which the request is sent
+			url: window.location.href + 'connect-google',
+			// what is this?
+			contentType: 'application/octet-stream; charset=utf-8',
+			// a function to call if the request succeeds
+			success: function(result) {                         
+				console.log(result);
+				$('#connected').show();
+			},
+			// prevents data from being transformed into a query string
+			processData: false,
+			// data to be sent to the server
+			data: this.authResult.code
+		});
+	}
 
-        $.ajax({
-            type: 'POST',
-            url: window.location.href + 'disconnect-google',
-            async: false,
-            success: function(result) {
-                console.log('revoke response: ' + result);
-            },
-            error: function(e) {
-                console.log(e);
-            }
-        });
-    }
+	function disconnectGoogle() {
+		// redisplay the sign-in button
+		$('#google-connect').show('slow');
+		$('#connected').hide('slow');
 
-    $(document).ready(function() {
-        $('#gdisconnect').click(disconnectGoogle);
-    });
+		$.ajax({
+			type: 'POST',
+			url: window.location.href + 'disconnect-google',
+			async: false,
+			success: function(result) {
+				console.log('revoke response: ' + result);
+			},
+			error: function(e) {
+				console.log(e);
+			}
+		});
+	}
 </script>
 
-<!DOCTYPE html>
-<html>
-<head>
-<title>Facebook Login JavaScript Example</title>
-<meta charset="UTF-8">
-</head>
-<body>
+<!-- Load the script for a Google + sign-in button asynchronously -->
+<script type="text/javascript">
+	(function() {
+		var po = document.createElement('script');
+		po.type = 'text/javascript'; 
+		po.async = true;
+		po.src = 'https://plus.google.com/js/client:plusone.js';
+		var s = document.getElementsByTagName('script')[0];
+		s.parentNode.insertBefore(po, s);
+	})();
+</script>
+
+<!-- Facebook functionality -->
 <script>
   // This is called with the results from from FB.getLoginStatus().
   function statusChangeCallback(response) {
-    console.log('statusChangeCallback');
-    console.log(response);
-    // The response object is returned with a status field that lets the
-    // app know the current login status of the person.
-    // Full docs on the response object can be found in the documentation
-    // for FB.getLoginStatus().
-    if (response.status === 'connected') {
-      // Logged into your app and Facebook.
-      testAPI();
-    } else if (response.status === 'not_authorized') {
-      // The person is logged into Facebook, but not your app.
-      document.getElementById('status').innerHTML = 'Please log ' +
-        'into this app.';
-    } else {
-      // The person is not logged into Facebook, so we're not sure if
-      // they are logged into this app or not.
-      document.getElementById('status').innerHTML = 'Please log ' +
-        'into Facebook.';
-    }
+	console.log('statusChangeCallback');
+	console.log(response);
+	// The response object is returned with a status field that lets the
+	// app know the current login status of the person.
+	// Full docs on the response object can be found in the documentation
+	// for FB.getLoginStatus().
+	if (response.status === 'connected') {
+	  // Logged into your app and Facebook.
+	  testAPI();
+	} else if (response.status === 'not_authorized') {
+	  // The person is logged into Facebook, but not your app.
+	  document.getElementById('status').innerHTML = 'Please log ' +
+		'into this app.';
+	} else {
+	  // The person is not logged into Facebook, so we're not sure if
+	  // they are logged into this app or not.
+	  document.getElementById('status').innerHTML = 'Please log ' +
+		'into Facebook.';
+	}
   }
 
   // This function is called when someone finishes with the Login
   // Button.  See the onlogin handler attached to it in the sample
   // code below.
   function checkLoginState() {
-    FB.getLoginStatus(function(response) {
-      statusChangeCallback(response);
-    });
+	FB.getLoginStatus(function(response) {
+	  statusChangeCallback(response);
+	});
   }
 
   window.fbAsyncInit = function() {
   FB.init({
-    appId      : '699197260143113',
-    cookie     : true,  // enable cookies to allow the server to access 
-                        // the session
-    xfbml      : true,  // parse social plugins on this page
-    version    : 'v2.0' // use version 2.0
+	appId      : '699197260143113',
+	cookie     : true,  // enable cookies to allow the server to access 
+						// the session
+	xfbml      : true,  // parse social plugins on this page
+	version    : 'v2.0' // use version 2.0
   });
 
   // Now that we've initialized the JavaScript SDK, we call 
@@ -167,48 +185,35 @@
   // These three cases are handled in the callback function.
 
   FB.getLoginStatus(function(response) {
-    statusChangeCallback(response);
+	statusChangeCallback(response);
   });
 
   };
 
+  /* Below we include the Login Button social plugin. This button uses
+  the JavaScript SDK to present a graphical Login button that triggers
+  the FB.login() function when clicked.
+  */
+
   // Load the SDK asynchronously
   (function(d, s, id) {
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
-    js = d.createElement(s); js.id = id;
-    js.src = "//connect.facebook.net/en_US/sdk.js";
-    fjs.parentNode.insertBefore(js, fjs);
+	var js, fjs = d.getElementsByTagName(s)[0];
+	if (d.getElementById(id)) return;
+	js = d.createElement(s); js.id = id;
+	js.src = "//connect.facebook.net/en_US/sdk.js";
+	fjs.parentNode.insertBefore(js, fjs);
   }(document, 'script', 'facebook-jssdk'));
 
   // Here we run a very simple test of the Graph API after login is
   // successful.  See statusChangeCallback() for when this call is made.
   function testAPI() {
-    console.log('Welcome!  Fetching your information.... ');
-    FB.api('/me', function(response) {
-      console.log('Successful login for: ' + response.name);
-      document.getElementById('status').innerHTML =
-        'Thanks for logging in, ' + response.name + '!';
-    });
+	console.log('Welcome!  Fetching your information.... ');
+	FB.api('/me', function(response) {
+	  console.log('Successful login for: ' + response.name);
+	  document.getElementById('status').innerHTML =
+		'Thanks for logging in, ' + response.name + '!';
+	});
   }
 </script>
-
-<!--
-  Below we include the Login Button social plugin. This button uses
-  the JavaScript SDK to present a graphical Login button that triggers
-  the FB.login() function when clicked.
--->
-<form action="http://ignore.ninja-bounce-house.appspot.com/twit/">
-		<input type="image" src="https://dev.twitter.com/sites/default/files/images_documentation/sign-in-with-twitter-gray.png" />
-
-<fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
-</fb:login-button>
-
-<div id="status">
-</div>
-
-</body>
-</html>
-
 
 {% endblock %}
