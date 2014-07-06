@@ -15,7 +15,7 @@
 			</div>
 			<div class="form-group">
 				<label for="file">Choose a file (jpg, jpeg, or png)</label>
-				<input type="file" class="form-control" id="file" name="file">
+				<input type="file" class="form-control" id="file" name="file" required>
 			</div>
 
 			<button type="submit" class="btn btn-primary" name="submit">Submit</button>
@@ -23,25 +23,8 @@
 	</div>
 </div>
 
-<script src="http://jquery.bassistance.de/validate/jquery.validate.js"></script>
-<script src="http://jquery.bassistance.de/validate/additional-methods.js"></script>
-
-<script type = "text/javascript">
-
-	$(document).ready(function() {
-
-		$('#upload-form').validate({
-
-			rules: {
-			    file: {
-			      required: true,
-			      extension: "jpg|jpeg|png"
-			    }
-			}
-		});
-
-	});
-
-</script>
+<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.13.0/jquery.validate.min.js"></script>
+<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.13.0/additional-methods.min.js"></script>
+<script src="{{ url_for('static', filename='js/moment.js') }}"></script>
 
 {% endblock %}

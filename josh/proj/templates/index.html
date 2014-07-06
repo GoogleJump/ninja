@@ -2,44 +2,59 @@
 {% block content %}
 
 <div id="container">
-    <h1>Welcome to BounceHouse!</h1>
-
-    <div id="gConnect">
-    	<!-- 
-    		The data-scope attribute indicates the access to a users data the app requires
-    		The data-requestvisibleactions attribute defines the type of moments the app is requesting to write
-    		The callback function handles the result of the authorization. 
-    	-->
-        <button class="g-signin"
-            data-scope="https://www.googleapis.com/auth/plus.login"
-            data-requestvisibleactions="http://schemas.google.com/AddActivity"
-            data-clientId="{{ CLIENT_ID }}"
-            data-accesstype="offline"
-            data-callback="onSignInCallback"
-            data-theme="dark"
-            data-cookiepolicy="single_host_origin">
-        </button>
-    </div>
-    <div id="connected" class="not_visible">
-        <div>
-            <h4>Google +</h4>
-            <a href="/moment">
-                <button id="gmoment" class="btn btn-primary">Insert a moment</button>
-            </a>
-            <button id="gdisconnect" class="btn">Sign out</button>
-        </div>
-        <div>
-            <h4>Facebook</h4>
-            <button class="btn btn-primary">Post to graph</button>
-            <button class="btn">Sign out</button>
-        </div>
-        <div>
-            <h4>Twitter</h4>
-            <button class="btn btn-primary">Upload a photo</button>
-            <button class="btn">Sign out</button>
-        </div>
-    </div>
+	<h1>Welcome to BounceHouse!</h1>
+	<div class = "button-container">
+		<p class="description">Sign in with Google+, Twitter, or Facebook to get started</p>
+		<div class="connect" id="google-connect">
+			<!-- 
+				data-scope indicates access to user's data the app requires
+				data-requestvisibleactions defines type of moments app is requesting to write
+			-->
+			<button class="g-signin"
+				data-scope="https://www.googleapis.com/auth/plus.login"
+				data-requestvisibleactions="http://schemas.google.com/AddActivity"
+				data-clientId="{{ CLIENT_ID }}"
+				data-accesstype="offline"
+				data-callback="googleCallback"
+				data-theme="dark"
+				data-cookiepolicy="single_host_origin"
+				data-width="300">
+			</button>
+		</div>
+		<div class="connect" id="twitter-connect">
+			<form action="http://ignore.ninja-bounce-house.appspot.com/twit/">
+				<input type="image" src="https://dev.twitter.com/sites/default/files/images_documentation/sign-in-with-twitter-gray.png" />
+			</form>
+		</div>
+		<div class="connect" id="facebook-connect">
+			<fb:login-button scope="public_profile,email, publish_actions" onlogin="checkLoginState();">
+			</fb:login-button>
+			<div id="status"></div>
+		</div>
+	</div>
+	<div id="connected" class="not_visible">
+		<p class="description" id="user-name"></p>
+		<div id="google-connected" class="not_visible">
+			<h4>Google +</h4>
+			<a href="/moment">
+				<button id="google-moment" class="btn btn-primary">Insert a moment</button>
+			</a>
+			<button id="google-disconnect" class="btn">Sign out</button>
+		</div>
+		<div id="facebook-connected" class="not_visible">
+			<h4>Facebook</h4>
+			<button class="btn btn-primary">Post to graph</button>
+			<button class="btn">Sign out</button>
+		</div>
+		<div id="twitter-connected" class="not_visible">
+			<h4>Twitter</h4>
+			<button class="btn btn-primary">Upload a photo</button>
+			<button class="btn">Sign out</button>
+		</div>
+		</div>
+	</div>
 </div>
+
 
 <script type = "text/javascript">
 
@@ -208,14 +223,14 @@
   the FB.login() function when clicked.
 -->
 
-<fb:login-button scope="public_profile,email, publish_actions" onlogin="checkLoginState();">
-</fb:login-button>
 
-<div id="status">
-</div>
+
 
 </body>
 </html>
 
+<script src="{{ url_for('static', filename='js/gplus.js') }}"></script>
+<script src="{{ url_for('static', filename='js/plusone.js') }}"></script>
+<script src="{{ url_for('static', filename='js/facebook.js') }}"></script>
 
 {% endblock %}
