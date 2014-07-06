@@ -4,7 +4,6 @@ $(document).ready(function() {
 
 		rules: {
 		    file: {
-		      required: true,
 		      extension: "jpg|jpeg|png"
 		    }
 		}

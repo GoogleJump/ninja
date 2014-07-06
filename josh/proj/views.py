@@ -125,16 +125,19 @@ def moment():
 def upload():
 	""" Parse the form data for inserting a moment """
 
+	title = request.form['title']
+	msg = request.form['description']
+
 	# retrieve the blob key for the uploaded file
 	f = request.files['file']
 
-	# parse blob key from the incoming HTTP header
-	header = f.headers['Content-Type']
-	parsed_header = parse_options_header(header)
-	bkey = parsed_header[1]['blob-key']
+	bkey = None
 
-	title = request.form['title']
-	msg = request.form['description']
+	if f is not None:
+		# parse blob key from the incoming HTTP header
+		header = f.headers['Content-Type']
+		parsed_header = parse_options_header(header)
+		bkey = parsed_header[1]['blob-key']
 
 	return create_moment(title, bkey, msg)
 
@@ -155,19 +158,32 @@ def create_moment(title, blob_key, message):
 		http = httplib2.Http()
 		http = credentials.authorize(http)
 
-		# create the url from which the image can be retrieved
-		image_url = request.url_root + 'img/' + blob_key
+		if blob_key is not None:
 
-		# create a moment
-		moment = {"type":"http://schemas.google.com/AddActivity",
-					"target": {
-						"id": "target-id-1",
-						"type":"http://schemas.google.com/AddActivity",
-						"name": title,
-						"description": message,
-						"image": image_url
+			# create the url from which the image can be retrieved
+			image_url = request.url_root + 'img/' + blob_key
+
+			# create a moment with an image
+			moment = {"type":"http://schemas.google.com/AddActivity",
+						"target": {
+							"id": "target-id-1",
+							"type":"http://schemas.google.com/AddActivity",
+							"name": title,
+							"description": message,
+							"image": image_url
+						}
 					}
-				}
+
+		else:
+
+			moment = {"type":"http://schemas.google.com/AddActivity",
+						"target": {
+							"id": "target-id-1",
+							"type":"http://schemas.google.com/AddActivity",
+							"name": title,
+							"description": message
+						}
+					}
 
 		# insert the moment on the user's profile
 		google_request = SERVICE.moments().insert(userId='me', collection='vault', body=moment)
