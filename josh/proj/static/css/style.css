@@ -6,6 +6,11 @@ body {
 	margin: 15px 0;
 }
 
+#connected {
+	margin-top: 20px;
+	padding-top: 20px;
+}
+
 #container {
 	width: 90%;
 	min-width: 960px;

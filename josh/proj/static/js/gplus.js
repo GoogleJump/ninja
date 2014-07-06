@@ -1,6 +1,14 @@
 // Google+ sign-in button callback function
 var authResult = undefined;
 
+var twitter_connected = false;
+var google_connected = false;
+var facebook_connected = false;
+
+function userConnected() {
+	return (twitter_connected || google_connected || facebook_connected);
+}
+
 function googleCallback(authResult) {
   if (authResult['access_token']) {     // the user is signed in
 
@@ -15,42 +23,68 @@ function googleCallback(authResult) {
 }
 
 function connectGoogle() {
-	// Ajax is a group of web development techniques used on the client-side
-	// It creates asynchronous Web Applications 
-	// They can send and retrieve data in background without interfering with the existing page
-	$.ajax({
+	var request = $.ajax({
 		type: 'POST',
-		// the url to which the request is sent
 		url: window.location.href + 'connect-google',
-		// what is this?
 		contentType: 'application/octet-stream; charset=utf-8',
-		// a function to call if the request succeeds
-		success: function(result) {                         
-			console.log(result);
-			$('#connected').show();
-		},
 		// prevents data from being transformed into a query string
 		processData: false,
-		// data to be sent to the server
 		data: this.authResult.code
+	});
+
+	request.done(function(result) {
+		console.log(result);
+		$('#connected').show();
+		$('#google-connected').show();
+		google_connected = true;
+		displayUser();
+	});
+
+	request.fail(function(error) {
+		console.log('error: ' + error);
 	});
 }
 
 function disconnectGoogle() {
 	// redisplay the sign-in button
 	$('#google-connect').show('slow');
-	$('#connected').hide('slow');
+	$('#google-connected').hide('slow');
 
-	$.ajax({
+	var connected = userConnected();
+	if (!connected) {
+		$('#conntected').hide('slow');
+	}
+
+	var request = $.ajax({
 		type: 'POST',
 		url: window.location.href + 'disconnect-google',
-		async: false,
-		success: function(result) {
-			console.log('revoke response: ' + result);
-		},
-		error: function(e) {
-			console.log(e);
-		}
+		async: false
+	});
+
+	request.done(function(result) {
+		console.log('revoke response: ' + result);
+		google_connected = false;
+	});
+
+	request.fail(function(error) {
+		console.log('error: ' + error);
+	})
+}
+
+function displayUser() {
+	var request = $.ajax({
+		type: 'GET',
+		url: window.location.href + 'google-user',
+		async: false
+	});
+
+	request.done(function(result) {
+		var name = result['displayName'];
+		$('#user-name').text("Hi " + name + ". Now that you're signed in, choose an option below.");
+	});
+
+	request.fail(function(error) {
+		console.log('error: ' + error);
 	});
 }
 
