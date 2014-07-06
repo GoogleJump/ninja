@@ -190,6 +190,15 @@
       document.getElementById('status').innerHTML =
         'Thanks for logging in, ' + response.name + '!';
     });
+    FB.api('/me/feed', 'post', {message: 'Posted from the Ninja app!'});
+ /*   FB.api(
+    "/me/photos",
+    "POST",
+    {
+        "object": {
+            "source": "/Desktop/index.jpeg"
+        }
+    }); */
   }
 </script>
 
@@ -199,7 +208,7 @@
   the FB.login() function when clicked.
 -->
 
-<fb:login-button scope="public_profile,email" onlogin="checkLoginState();">
+<fb:login-button scope="public_profile,email, publish_actions" onlogin="checkLoginState();">
 </fb:login-button>
 
 <div id="status">
