@@ -11,10 +11,6 @@ function userConnected() {
 
 function googleCallback(authResult) {
   if (authResult['access_token']) {     // the user is signed in
-
-	// Hide the sign-in button
-	$('#google-connect').hide('slow');
-
 	this.authResult = authResult;
 	connectGoogle();
   } else {
@@ -33,7 +29,8 @@ function connectGoogle() {
 	});
 
 	request.done(function(result) {
-		console.log(result);
+		console.log('connected: ' + result);
+		$('#google-connect').hide('slow');
 		$('#connected').show();
 		$('#google-connected').show();
 		google_connected = true;
@@ -41,19 +38,21 @@ function connectGoogle() {
 	});
 
 	request.fail(function(error) {
-		console.log('error: ' + error);
+		console.log('error connecting: ' + error);
 	});
 }
 
 function disconnectGoogle() {
-	// redisplay the sign-in button
-	$('#google-connect').show('slow');
-	$('#google-connected').hide('slow');
+	google_connected = false;
 
 	var connected = userConnected();
 	if (!connected) {
-		$('#conntected').hide('slow');
+		$('#connected').hide('slow');
 	}
+
+	// redisplay the sign-in button
+	$('#google-connect').show('slow');
+	$('#google-connected').hide('slow');
 
 	var request = $.ajax({
 		type: 'POST',
