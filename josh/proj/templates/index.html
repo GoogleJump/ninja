@@ -36,11 +36,18 @@
 <div id="container">
 	<div class="form-group">
 		<label for="title">Text to post to facebook graph: </label>
-		<input type="text" class="form-control" id="TEXT_ID" placeholder="Enter post title" name="title" required>
+		<input type="" class="form-control" id="TEXT_ID" placeholder="Enter post title" name="title" required>
 	</div>
 	<button onclick="PostText()" name="submit">Post</button>
 </div>
 
+<div id="container">
+	<div class="form-group">
+		<label for="title">Picture to post to facebook graph: </label>
+		<input type="file" class="form-control" id="PIC_ID" placeholder="Enter pic" name="PicTitle" required>
+	</div>
+	<button onclick="PostPic()" name="submitPic">Post Pic</button>
+</div>
 
 	<div id="connected" class="not_visible">
 		<p class="description" id="user-name"></p>
@@ -142,6 +149,18 @@
   function PostText()
 {
 	FB.api('/me/feed', 'post', {message: document.getElementById("TEXT_ID").value});
+}
+function PostPic()
+{
+    /*FB.api(
+    "/me/photos",
+    "POST",
+    {
+        "object": {
+            "source": document.getElementById("PIC_ID").form
+        }
+    }
+); */
 }
 </script>
 
