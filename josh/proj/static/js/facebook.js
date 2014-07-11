@@ -8,6 +8,7 @@ function statusChangeCallback(response) {
 	// for FB.getLoginStatus().
 	if (response.status === 'connected') {
 	  // Logged into your app and Facebook.
+	  accessToken = response.authResponse.accessToken;
 	  testAPI();
 	} else if (response.status === 'not_authorized') {
 	  // The person is logged into Facebook, but not your app.
@@ -54,6 +55,7 @@ window.fbAsyncInit = function() {
 	FB.getLoginStatus(function(response) {
 		statusChangeCallback(response);
 	});
+accessToken = response.authResponse.accessToken;
 };
 
 /* Below we include the Login Button social plugin. This button uses
@@ -79,4 +81,38 @@ function testAPI() {
 	  document.getElementById('status').innerHTML =
 		'Thanks for logging in, ' + response.name + '!';
 	});
+}
+
+
+function PostPic()
+{
+	//FB.api('/me/feed', 'post', {message: "Pic didn't post"});
+    //FB.api('/me/photos','post', {object: {"source": document.getElementById("PIC_ID").form}});
+/* make the API call */
+
+
+/*FB.api(
+    "/me/photos",
+    "POST",
+    {
+        "object": {
+            "source": document.getElementById("PIC_ID").form"
+        }
+    },
+    function (response) {
+      if (response && !response.error) {
+	FB.api('/me/feed', 'post', {message: "Pic didn't post"});
+      }
+    }
+);*/
+
+	FB.api('me/photos', function(response)
+	{
+	var album = response.data[0]; // Now, upload the image to first found album for easiness.
+		 var action_url = 'https://graph.facebook.com/' + album.id + '/photos?access_token=' +  accessToken;
+	var form = document.getElementbyId('PIC_ID');
+	form.setAttribute('action', action_url);
+	form.submit();
+	  });
+	//document.getElementById('status').innerHTML = 'Thanks for posting a picture, ' + response.name + '!';
 }

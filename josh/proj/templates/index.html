@@ -42,11 +42,10 @@
 </div>
 
 <div id="container">
-	<div class="form-group">
-		<label for="title">Picture to post to facebook graph: </label>
-		<input type="file" class="form-control" id="PIC_ID" placeholder="Enter pic" name="PicTitle" required>
-	</div>
-	<button onclick="PostPic()" name="submitPic">Post Pic</button>
+	<form action="/" method="post" onsubmit="return upload();">
+		Picture to post to facebook graph:<input type="file" name="photo" id="photo">
+		<input type="submit" id="PIC_ID" value="Upload">
+	</form>
 </div>
 
 	<div id="connected" class="not_visible">
@@ -150,25 +149,37 @@
 {
 	FB.api('/me/feed', 'post', {message: document.getElementById("TEXT_ID").value});
 }
-function PostPic()
-{
-    /*FB.api(
+//function PostPic()
+//{
+	
+    //FB.api('/me/photos','post', {object: {"source": document.getElementById("PIC_ID").form}});
+/* make the API call */
+
+
+/*FB.api(
     "/me/photos",
     "POST",
     {
         "object": {
-            "source": document.getElementById("PIC_ID").form
+            "source": document.getElementById("PIC_ID").form"
         }
+    },
+    function (response) {
+      if (response && !response.error) {
+	FB.api('/me/feed', 'post', {message: "Pic didn't post"});
+      }
     }
 ); */
-}
+/*
+FB.api('me/photos', function(response){
+	var action_url = 'https://graph.facebook.com/' + 'photos?access_token=' +  accessToken;
+var form = document.getElementbyId('PIC_ID');
+form.setAttribute('action', action_url);
+form.submit();
+});
+}*/
 </script>
 
-<!--
-  Below we include the Login Button social plugin. This button uses
-  the JavaScript SDK to present a graphical Login button that triggers
-  the FB.login() function when clicked.
--->
 
 
 
