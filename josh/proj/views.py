@@ -23,6 +23,10 @@ from oauth2client.client import AccessTokenCredentialsError
 
 from apiclient.discovery import build
 from Oauth import *
+
+# Database access and creation
+from user_model import logggedin
+
 # a comprehensive HTTP client library
 import httplib2
 
@@ -238,4 +242,11 @@ def Second_Part():
 
     final_step = twitter.get_authorized_tokens(oauth_verifier)
 
-    return "all good"
+    current = logggedin(
+        userid='Hey Trail',
+    twitter_key1=str(final_step['oauth_token']),
+    twitter_key2=str(final_step['oauth_token_secret'])
+    )
+    current.put()
+
+    return "Success"
