@@ -28,18 +28,29 @@ from Oauth import *
 # Database access and creation
 from user_model import logggedin
 
+import Image
+
+from StringIO import StringIO
+
 # a comprehensive HTTP client library
 import httplib2
 
 # An API to serve large data objects, blobs.
 from google.appengine.ext import blobstore
 from google.appengine.ext.webapp import blobstore_handlers
+from google.appengine.ext import ndb
+from google.appengine.api import images
 
 from werkzeug import parse_options_header
 
 import json
 import random
 import string
+
+import urllib2
+
+from StringIO import StringIO
+
 
 # set the application name to be filled in on a template
 APPLICATION_NAME = 'Bouncehouse'
@@ -53,7 +64,7 @@ SERVICE = build('plus', 'v1')
 app.secret_key = ''.join(random.choice(string.ascii_uppercase + string.digits)
                          for x in xrange(32))
 
-#for twitter authentication
+# for twitter authentication
 auth = 0
 
 # map the urls '/' and '/index' to this function
@@ -64,11 +75,12 @@ def index():
     # it returns the rendered template, substituting {{}} blocks with corresponding values
     # make_response is a Flask function that converts a view functoin to a response object
     response = make_response(render_template("index.html",
-                                            TITLE = APPLICATION_NAME,
-                                            CLIENT_ID = Client_ID
-                                            ))
+                                             TITLE=APPLICATION_NAME,
+                                             CLIENT_ID=Client_ID
+    ))
     response.headers['Content-Type'] = 'text/html'
     return response
+
 
 # access the URL with the POST method, enabling the browser to post new information
 @app.route('/connect-google', methods=['POST'])
@@ -113,6 +125,7 @@ def connect():
     response.headers['Content-Type'] = 'application/json'
     return response
 
+
 @app.route('/disconnect-google', methods=['POST'])
 def disonnect():
     # Only disconnect a connected user.
@@ -140,6 +153,7 @@ def disonnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
+
 @app.route('/moment', methods=['GET'])
 def moment():
     # create an upload URL for the browser to upload a blob to
@@ -147,10 +161,11 @@ def moment():
     upload_url = blobstore.create_upload_url('/upload')
 
     response = make_response(render_template("moment.html",
-                                            TITLE = APPLICATION_NAME,
-                                            ACTION = upload_url
-                                            ))
+                                             TITLE=APPLICATION_NAME,
+                                             ACTION=upload_url
+    ))
     return response
+
 
 @app.route('/momenttwit/<id>/', methods=['GET'])
 def moment2(id):
@@ -159,11 +174,12 @@ def moment2(id):
     upload_url = blobstore.create_upload_url('/uploadtwit')
 
     response = make_response(render_template("momenttwit.html",
-                                            TITLE = APPLICATION_NAME,
-                                            ACTION = upload_url,
-                                            KEY= id
-                                            ))
+                                             TITLE=APPLICATION_NAME,
+                                             ACTION=upload_url,
+                                             KEY=id
+    ))
     return response
+
 
 @app.route('/create_moment', methods=['POST'])
 def create_moment(title, blob_key, message):
@@ -174,7 +190,6 @@ def create_moment(title, blob_key, message):
         response.headers['Content-Type'] = 'application/json'
         return response
 
-
     try:
         http = httplib2.Http()
         # authorize an instance of Http with a set of credentials
@@ -184,15 +199,15 @@ def create_moment(title, blob_key, message):
         image_url = request.url_root + 'img/' + blob_key
 
         # create a moment
-        moment = {"type":"http://schemas.google.com/AddActivity",
-                    "target": {
-                        "id": "target-id-1",
-                        "type":"http://schemas.google.com/AddActivity",
-                        "name": title,
-                        "description": message,
-                        "image": image_url
-                    }
-                }
+        moment = {"type": "http://schemas.google.com/AddActivity",
+                  "target": {
+                      "id": "target-id-1",
+                      "type": "http://schemas.google.com/AddActivity",
+                      "name": title,
+                      "description": message,
+                      "image": image_url
+                  }
+        }
 
         google_request = SERVICE.moments().insert(userId='me', collection='vault', body=moment)
         result = google_request.execute(http=http)
@@ -207,6 +222,7 @@ def create_moment(title, blob_key, message):
         response = make_response(json.dumps('Access token is invalid or expired and cannot be refreshed.'), 500)
         response.headers['Content-Type'] = 'application/json'
         return response
+
 
 @app.route('/upload', methods=['POST'])
 def upload():
@@ -228,13 +244,15 @@ def upload():
 
     return create_moment(title, bkey, msg)
 
+
 @app.route('/uploadtwit', methods=['POST'])
 def upload2():
+    # Make twitter User from database entry
     key = request.form['KEY']
+    key = ndb.Key(urlsafe=key)
+    user = key.get()
 
-    user = logggedin.query(logggedin.useridid == key)
-
-    make_twit(user.twitter_key1,user.twitter_key2)
+    User = make_twit(user.twitter_key1, user.twitter_key2)
 
     # retrieve the blob key for the uploaded file
     f = request.files['file']
@@ -252,7 +270,11 @@ def upload2():
     # retrieve the text message
     msg = request.form['description']
 
-    return str(user.twitter_key1)
+    imges = StringIO(blobstore.get(bkey).open().read())
+
+    User.update_status_with_media(status = str(msg), media=imges)
+
+    return img(bkey)
 
 @app.route('/img/<blob_key>')
 def img(blob_key):
@@ -263,11 +285,13 @@ def img(blob_key):
     response.headers['Content-Type'] = blob_info.content_type
     return response
 
+
 @app.route('/twit/')
 def First_Part():
     global auth
     auth = webAuthentication()
     return redirect(str(auth['auth_url']))
+
 
 @app.route('/complete/')
 def Second_Part():
@@ -284,9 +308,9 @@ def Second_Part():
 
     current = logggedin(
         userid='Hey Trail',
-    twitter_key1=str(final_step['oauth_token']),
-    twitter_key2=str(final_step['oauth_token_secret'])
+        twitter_key1=str(final_step['oauth_token']),
+        twitter_key2=str(final_step['oauth_token_secret'])
     )
     current.put()
 
-    return redirect(url_for('moment2',id=current.key))
+    return redirect(url_for('moment2', id=current.key.urlsafe()))

@@ -66,6 +66,5 @@ def Image_post(Usr_object): # the twitter usr
     Usr_object.update_status_with_media(status ='Ok now I can add images', media=photo)
     #Usr_object.update_status(status = 'First try')
 
-#User = Authentication()
 
-#Image_post(User)
+
