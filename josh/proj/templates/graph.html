@@ -1,0 +1,32 @@
+
+
+{% extends "base.html" %}
+{% block content %}
+
+<div id="container">
+	<h1>Post to graph</h1>
+	<div class="form_container">
+		   <form role="form" action= "{{ ACTION }}" method="POST" enctype="multipart/form-data" id="upload-form" >
+			<div class="form-group">
+				<label for="title">Title</label>
+				<input type="text" class="form-control" id="titlefb" placeholder="Enter post title" name="titlefb" required>
+			</div>
+			<div class="form-group">
+				<label for="description">Description</label>
+				<input type="text" class="form-control" id="descriptionfb" placeholder="Enter post description" name="descriptionfb" required>
+			</div>
+			<div class="form-group">
+				<label for="file">Choose a file (jpg, jpeg, or png)</label>
+				<input type="file" class="form-control" id="filefb" name="filefb">
+			</div>
+
+			<button type="submit" class="btn btn-primary" name="submitfb">Submit</button>
+		</form> 
+	</div>
+</div>
+
+<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.13.0/jquery.validate.min.js"></script>
+<script src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.13.0/additional-methods.min.js"></script>
+<script src="{{ url_for('static', filename='js/facebook.js') }}"></script>
+
+{% endblock %}

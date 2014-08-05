@@ -32,22 +32,6 @@
 			<div id="status"></div>
 		</div>
 	</div>
-
-<div id="container">
-	<div class="form-group">
-		<label for="title">Text to post to facebook graph: </label>
-		<input type="" class="form-control" id="TEXT_ID" placeholder="Enter post title" name="title" required>
-	</div>
-	<button onclick="PostText()" name="submit">Post</button>
-</div>
-
-<div id="container">
-	<form action="/" method="post" onsubmit="return upload();">
-		Picture to post to facebook graph:<input type="file" name="photo" id="photo">
-		<input type="submit" id="PIC_ID" value="Upload">
-	</form>
-</div>
-
 	<div id="connected" class="not_visible">
 		<p class="description" id="user-name"></p>
 		<div id="google-connected" class="not_visible">
@@ -67,125 +51,8 @@
 			<button class="btn btn-primary">Upload a photo</button>
 			<button class="btn">Sign out</button>
 		</div>
-		</div>
 	</div>
 </div>
-
-
-<script type = "text/javascript">
-
-    var authResult = undefined;
-
-    function onSignInCallback(authResult) {
-      if (authResult['access_token']) {     // the user is signed in
-        console.log(authResult);
-
-        // Hide the sign-in button
-        $('#gConnect').hide('slow');
-
-        this.authResult = authResult;
-        connectServer();
-      } else {
-        console.log('Sign-in state: ' + authResult['error']);
-      }
-    }
-
-    function connectServer() {
-        console.log(authResult.code);
-        // Ajax is a group of web development techniques used on the client-side
-        // It creates asynchronous Web Applications 
-        // They can send and retrieve data in background without interfering with the existing page
-        $.ajax({
-            type: 'POST',
-            // the url to which the request is sent
-            url: window.location.href + 'connect',
-            // what is this?
-            contentType: 'application/octet-stream; charset=utf-8',
-            // a function to call if the request succeeds
-            success: function(result) {                         
-              console.log(result);
-              $('#connected').show();
-            },
-            // prevents data from being transformed into a query string
-            processData: false,
-            // data to be sent to the server
-            data: this.authResult.code
-        });
-    }
-
-    function disconnectServer() {
-        // redisplay the sign-in button
-        $('#gConnect').show('slow');
-        $('#connected').hide('slow');
-
-        $.ajax({
-            type: 'POST',
-            url: window.location.href + 'disconnect',
-            async: false,
-            success: function(result) {
-                console.log('revoke response: ' + result);
-            },
-            error: function(e) {
-                console.log(e);
-            }
-        });
-    }
-
-    $(document).ready(function() {
-        $('#gdisconnect').click(disconnectServer);
-    });
-</script>
-
-<!DOCTYPE html>
-<html>
-<head>
-<title>Facebook Login JavaScript Example</title>
-<meta charset="UTF-8">
-</head>
-<body>
-<script>
-
-  function PostText()
-{
-	FB.api('/me/feed', 'post', {message: document.getElementById("TEXT_ID").value});
-}
-//function PostPic()
-//{
-	
-    //FB.api('/me/photos','post', {object: {"source": document.getElementById("PIC_ID").form}});
-/* make the API call */
-
-
-/*FB.api(
-    "/me/photos",
-    "POST",
-    {
-        "object": {
-            "source": document.getElementById("PIC_ID").form"
-        }
-    },
-    function (response) {
-      if (response && !response.error) {
-	FB.api('/me/feed', 'post', {message: "Pic didn't post"});
-      }
-    }
-); */
-/*
-FB.api('me/photos', function(response){
-	var action_url = 'https://graph.facebook.com/' + 'photos?access_token=' +  accessToken;
-var form = document.getElementbyId('PIC_ID');
-form.setAttribute('action', action_url);
-form.submit();
-});
-}*/
-</script>
-
-
-
-
-
-</body>
-</html>
 
 <script src="{{ url_for('static', filename='js/gplus.js') }}"></script>
 <script src="{{ url_for('static', filename='js/plusone.js') }}"></script>

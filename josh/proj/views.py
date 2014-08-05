@@ -14,8 +14,6 @@ from twython import Twython
 # Database access and creation
 from user_model import logggedin
 
-import Image
-
 from StringIO import StringIO
 
 # a comprehensive HTTP client library
@@ -385,3 +383,60 @@ def Second_Part():
 
     return redirect(url_for('moment2', id=current.key.urlsafe()))
 
+@app.route('/graph', methods=['GET'])
+def graph():
+    """ Create a blobstore upload URL and render an upload form """
+    # create an upload URL for the browser to upload a blob to
+    # if the upload is successful, the user wil be rerouted to /uploadfb
+    upload_url = blobstore.create_upload_url('/uploadfb')
+
+    response = make_response(render_template("graph.html", TITLE = APPLICATION_NAME,ACTION = upload_url))
+    return response
+
+@app.route('/uploadfb', methods=['POST'])
+def uploadfb():
+    """ Parse the form data for inserting a facebook graph node """
+
+    title = request.form['titlefb']
+    msg = request.form['descriptionfb']
+
+    # retrieve the blob key for the uploaded file
+    f = request.files['filefb']
+
+    bkey = None
+
+    if f is not None:
+        # parse blob key from the incoming HTTP header
+        header = f.headers['Content-Type']
+        parsed_header = parse_options_header(header)
+        bkey = parsed_header[1]['blob-key']
+
+    return fb_publish(title, bkey, msg)
+
+@app.route('/fb_publish', methods=['POST'])
+def fb_publish(title, blob_key, message):
+    """Publish to Facebook user's graph"""
+    image_url = ""
+    try:
+        # authorize an instance of Http with a set of credentials
+        #http = httplib2.Http()
+        #http = credentials.authorize(http)
+
+        if blob_key is not None:
+
+            # create the url from which the image can be retrieved
+            image_url = request.url_root + 'img/' + blob_key
+            response = make_response(render_template("postpic.html", URL = image_url))
+            #response = make_response(json.dumps(image_url))
+            #response.headers['Content-Type'] = 'application/json'
+            return response
+            #return image_url
+        else:
+            response = make_response(json.dumps('Blob key was none'), 500)
+            response.headers['Content-Type'] = 'application/json'
+            return response
+
+    except:
+        response = make_response(json.dumps('Failed to refresh access token.'+ image_url), 500)
+        response.headers['Content-Type'] = 'application/json'
+        return response

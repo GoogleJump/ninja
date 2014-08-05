@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Post pic</h1>
+<div id="container">
+	<button id="post_pic" name="submit">Post</button>
+</div>
+
+<script src="{{ url_for('static', filename='js/facebook.js') }}"></script>
+<script>
+
+$('#post_pic').click(function() {
+	var URL = "{{ URL }}";
+
+	FB.api('/me/photos', 'post', {
+	  url: URL,
+	  message: 'Upload demo'
+	}, function(response){
+	  if (response && response.id)
+	    console.log('Photo uploaded', response.id);
+	});
+
+});
+
+</script>
+
+{% endblock %}

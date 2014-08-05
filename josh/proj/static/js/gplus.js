@@ -10,6 +10,7 @@ function userConnected() {
 }
 
 function googleCallback(authResult) {
+	console.log(authResult);
   if (authResult['access_token']) {     // the user is signed in
 	this.authResult = authResult;
 	connectGoogle();
