@@ -428,19 +428,14 @@ def fb_publish(title, blob_key, message):
     """Publish to Facebook user's graph"""
     image_url = ""
     try:
-        # authorize an instance of Http with a set of credentials
-        #http = httplib2.Http()
-        #http = credentials.authorize(http)
 
         if blob_key is not None:
 
             # create the url from which the image can be retrieved
             image_url = request.url_root + 'img/' + blob_key
             response = make_response(render_template("postpic.html", URL = image_url))
-            #response = make_response(json.dumps(image_url))
-            #response.headers['Content-Type'] = 'application/json'
             return response
-            #return image_url
+            
         else:
             response = make_response(json.dumps('Blob key was none'), 500)
             response.headers['Content-Type'] = 'application/json'
