@@ -294,23 +294,33 @@ def upload2():
 
     User = make_twit(user.twitter_key1, user.twitter_key2)
 
-    # retrieve the blob key for the uploaded file
-    f = request.files['file']
-
-    header = f.headers['Content-Type']
-    parsed_header = parse_options_header(header)
-    bkey = parsed_header[1]['blob-key']
-
     # retrieve the title
     title = request.form['title']
 
     if title == '':
         return redirect('/moment')
 
+    # retrieve the blob key for the uploaded file
+
+    if request.files['file']:
+        f = request.files['file']
+        header = f.headers['Content-Type']
+        parsed_header = parse_options_header(header)
+        bkey = parsed_header[1]['blob-key']
+        imges = StringIO(blobstore.get(bkey).open().read())
+
+    """if request.form['urls']:
+        website = request.form['urls']
+        openrl = urllib2.build_opener()
+        page = openrl.open(website)
+        picture = page.read()
+        imges = picture"""
+
+
     # retrieve the text message
     msg = request.form['description']
 
-    imges = StringIO(blobstore.get(bkey).open().read())
+
 
     User.update_status_with_media(status = str(msg), media=imges)
 
