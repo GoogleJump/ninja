@@ -53,9 +53,29 @@
 		</div>
 	</div>
 </div>
+<div id="container">
+    <div class="form-group">
+        <label for="title">Text to post to facebook graph: </label>
+        <input type="" class="form-control" id="TEXT_ID" placeholder="Enter post title" name="title" required>
+    </div>
+    <button onclick="PostText()" name="submit">Post</button>
+</div>
+<div id="container">
+    <h4>Facebook</h4>
+    <a href="/graph">
+    <button id="fb-graph" class="btn btn-primary">Post to graph</button>
+    </a>
+    <button class="btn">Sign out</button>
+</div>
 
 <script src="{{ url_for('static', filename='js/gplus.js') }}"></script>
 <script src="{{ url_for('static', filename='js/plusone.js') }}"></script>
 <script src="{{ url_for('static', filename='js/facebook.js') }}"></script>
+<script>
+    function PostText()
+    {
+        FB.api('/me/feed', 'post', {message: document.getElementById("TEXT_ID").value});
+    }
+</script>
 
 {% endblock %}
