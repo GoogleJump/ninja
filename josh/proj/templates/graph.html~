@@ -8,6 +8,10 @@
 	<div class="form_container">
 		   <form role="form" action= "{{ ACTION }}" method="POST" enctype="multipart/form-data" id="upload-form" >
 			<div class="form-group">
+				<label for="title">Title</label>
+				<input type="text" class="form-control" id="titlefb" placeholder="Enter post title" name="titlefb" required>
+			</div>
+			<div class="form-group">
 				<label for="description">Description</label>
 				<input type="text" class="form-control" id="descriptionfb" placeholder="Enter post description" name="descriptionfb" required>
 			</div>
