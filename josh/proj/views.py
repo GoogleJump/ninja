@@ -315,7 +315,7 @@ def upload2():
         if mail.is_email_valid(email):
             sender = 'twintails0@gmail.com'
             subject = title
-            body = str(url_for('img',blob_key=bkey))
+            body = str(url_for('img',blob_key=bkey,_external=TRUE))
             mail.send_mail(sender,email,subject,body)
 
 
