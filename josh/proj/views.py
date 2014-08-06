@@ -309,12 +309,13 @@ def upload2():
         bkey = parsed_header[1]['blob-key']
         imges = StringIO(blobstore.get(bkey).open().read())
 
-    """if request.form['urls']:
-        website = request.form['urls']
-        openrl = urllib2.build_opener()
-        page = openrl.open(website)
-        picture = page.read()
-        imges = picture"""
+    if request.form['urls']:
+        email = request.form['urls']
+        if mail.is_email_valid(email):
+            sender = 'twintails0@gmail.com'
+            subject = title
+            body = str(url_for('img',blob_key=bkey))
+            mail.send_mail(sender,email,subject,body)
 
 
     # retrieve the text message
